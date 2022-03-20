@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">rma2022v1</string>
+    <string name="prikazi_button">Prikazi</string>
+    <string name="unesi_tekst_edit_text">Unesi tekst</string>
+</resources>
