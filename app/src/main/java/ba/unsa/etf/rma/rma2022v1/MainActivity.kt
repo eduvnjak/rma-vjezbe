@@ -9,7 +9,7 @@ import android.widget.TextView
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_relative)
         //Dohvatit ćemo referencu na view button-a preko id-a
         val button = findViewById<Button>(R.id.button1)
         //Definisat ćemo akciju u slučaju klik akcije
