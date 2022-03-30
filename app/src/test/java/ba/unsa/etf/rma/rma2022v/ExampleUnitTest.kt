@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v1
+package ba.unsa.etf.rma.rma2022v
 
 import org.junit.Test
 

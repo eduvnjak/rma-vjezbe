@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">rma2022v1</string>
-    <string name="prikazi_button">Prikazi</string>
-    <string name="unesi_tekst_edit_text">Unesi tekst</string>
+    <string name="app_name">rma2022v</string>
+    <string name="prikazi_button">Show</string>
+    <string name="unesi_tekst_edit_text">Enter text</string>
+    <string name="search">Search</string>
+    <string name="favorite">Favorite movies</string>
+    <string name="recent">Recent movies</string>
 </resources>

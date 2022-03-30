@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v1
+package ba.unsa.etf.rma.rma2022v
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

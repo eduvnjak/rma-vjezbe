@@ -7,7 +7,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "ba.unsa.etf.rma.rma2022v1"
+        applicationId "ba.unsa.etf.rma.rma2022v"
         minSdk 24
         targetSdk 31
         versionCode 1
