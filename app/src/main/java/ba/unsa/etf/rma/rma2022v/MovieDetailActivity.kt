@@ -9,6 +9,9 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 
 
 class MovieDetailActivity : AppCompatActivity() {
@@ -21,6 +24,23 @@ class MovieDetailActivity : AppCompatActivity() {
     private lateinit var website : TextView
     private lateinit var poster : ImageView
 
+    private lateinit var bottomNav: BottomNavigationView
+
+    private val mOnItemSelectedListener = NavigationBarView.OnItemSelectedListener{ item ->
+        when(item.itemId){
+            R.id.navigation_actors -> {
+                var actorsFragment = ActorsFragment(movie.title)
+                openFragment(actorsFragment)
+                return@OnItemSelectedListener true
+            }
+            R.id.navigation_similar -> {
+                var similarFragment = SimilarFragment(movie.title)
+                openFragment(similarFragment)
+                return@OnItemSelectedListener true
+            }
+        }
+        false
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie_detail)
@@ -43,6 +63,10 @@ class MovieDetailActivity : AppCompatActivity() {
         title.setOnClickListener {
             searchTrailer()
         }
+
+        bottomNav = findViewById(R.id.detail_navigation)
+        bottomNav.setOnItemSelectedListener (mOnItemSelectedListener)
+        bottomNav.selectedItemId = R.id.navigation_actors
     }
 
     private fun searchTrailer() {
@@ -88,5 +112,11 @@ class MovieDetailActivity : AppCompatActivity() {
         } catch (e: ActivityNotFoundException) {
             // Definisati naredbe ako ne postoji aplikacija za navedenu akciju
         }
+    }
+    private fun openFragment(fragment: Fragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.detail_container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 }

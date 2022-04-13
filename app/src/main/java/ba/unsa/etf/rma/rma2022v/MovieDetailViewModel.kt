@@ -10,4 +10,10 @@ class MovieDetailViewModel {
         return movie?:Movie(0,"Test","Test","Test","Test","Test")
     }
 
+    fun getActorsByTitle(actorName: String): List<String> {
+        return ActorMovieRepository.getActorMovies()?.get(actorName)?: emptyList()
+    }
+    fun getSimilarMoviesByTitle(movieName: String): List<String> {
+        return MovieRepository.getSimilarMovies()?.get(movieName)?: emptyList()
+    }
 }
