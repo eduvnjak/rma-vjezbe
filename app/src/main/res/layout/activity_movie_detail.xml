@@ -47,7 +47,9 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/movie_poster_card"
-                app:layout_constraintTop_toBottomOf="@+id/backdrop_guideline" />
+                app:layout_constraintTop_toBottomOf="@+id/backdrop_guideline"
+                android:transitionName="title"
+                />
 
             <TextView
                 android:id="@+id/movie_release_date"
@@ -103,7 +105,9 @@
                 <ImageView
                     android:id="@+id/movie_poster"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:transitionName="poster"
+                    />
 
             </androidx.cardview.widget.CardView>
 

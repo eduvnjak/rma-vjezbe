@@ -13,13 +13,17 @@
             android:id="@+id/movieImage"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:transitionName="poster"
+            />
         <TextView
             android:id="@+id/movieTitle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:transitionName="title"
+            />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

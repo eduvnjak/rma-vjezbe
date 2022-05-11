@@ -11,7 +11,7 @@ import ba.unsa.etf.rma.rma2022v.R
 
 class MovieListAdapter(
     private var movies: List<Movie>,
-    private val onItemClicked: (movie:Movie) -> Unit
+    private val onItemClicked: (movie:Movie,view1:View,view2:View) -> Unit
 ) : RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val view = LayoutInflater
@@ -21,16 +21,16 @@ class MovieListAdapter(
     }
     override fun getItemCount(): Int = movies.size
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.movieTitle.text = movies[position].title;
+        holder.movieTitle.text = movies[position].title
         val genreMatch: String = movies[position].genre
         //Pronalazimo id drawable elementa na osnovu naziva žanra
         val context: Context = holder.movieImage.getContext()
         var id: Int = context.getResources()
             .getIdentifier(genreMatch, "drawable", context.getPackageName())
-        if (id===0) id=context.getResources()
+        if (id==0) id=context.getResources()
             .getIdentifier("other", "drawable", context.getPackageName())
         holder.movieImage.setImageResource(id)
-        holder.itemView.setOnClickListener{ onItemClicked(movies[position]) }
+        holder.itemView.setOnClickListener{ onItemClicked(movies[position],holder.movieImage,holder.movieTitle) }
     }
     fun updateMovies(movies: List<Movie>) {
         this.movies = movies
