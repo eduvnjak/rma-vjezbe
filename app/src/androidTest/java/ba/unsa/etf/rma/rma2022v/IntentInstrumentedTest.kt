@@ -19,10 +19,6 @@ import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Test
 
-import androidx.test.espresso.intent.rule.IntentsTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import org.junit.Rule
-import org.junit.runner.RunWith
 
 
 class IntentInstrumentedTest {
@@ -45,7 +41,7 @@ class IntentInstrumentedTest {
         pokreniDetalje.putExtra("movie_title","Pulp Fiction")
 
 
-        val scenario = launchActivity<MovieDetailActivity>(pokreniDetalje)
+        launchActivity<MovieDetailActivity>(pokreniDetalje)
         onView(withId(R.id.movie_title)).check(matches(withText("Pulp Fiction")))
         onView(withId(R.id.movie_genre)).check(matches(withText("crime")))
         onView(withId(R.id.movie_overview)).check(matches(withSubstring("pair of diner bandits")))
@@ -56,7 +52,7 @@ class IntentInstrumentedTest {
         Intents.init()
         val pokreniDetalje = Intent(MovieDetailActivity::javaClass.name)
         pokreniDetalje.putExtra("movie_title","Pulp Fiction")
-        val scenario = launchActivity<MovieDetailActivity>(pokreniDetalje)
+        launchActivity<MovieDetailActivity>(pokreniDetalje)
         onView(withId(R.id.movie_website)).perform(click())
         intended(hasAction(Intent.ACTION_VIEW))
         Intents.release()
