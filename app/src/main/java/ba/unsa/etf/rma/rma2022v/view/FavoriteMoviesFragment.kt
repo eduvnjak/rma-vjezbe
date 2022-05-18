@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v
+package ba.unsa.etf.rma.rma2022v.view
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -9,13 +9,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ba.unsa.etf.rma.rma2022v.*
+import ba.unsa.etf.rma.rma2022v.data.Movie
+import ba.unsa.etf.rma.rma2022v.viewmodel.MovieListViewModel
 import android.util.Pair as UtilPair
 
 
 class FavoriteMoviesFragment : Fragment() {
     private lateinit var favoriteMovies: RecyclerView
     private lateinit var favoriteMoviesAdapter: MovieListAdapter
-    private var movieListViewModel =  MovieListViewModel()
+    private var movieListViewModel =  MovieListViewModel(null, null)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.favorites_fragment, container, false)
         favoriteMovies = view.findViewById(R.id.favoriteMovies)
@@ -28,7 +31,7 @@ class FavoriteMoviesFragment : Fragment() {
     companion object {
         fun newInstance(): FavoriteMoviesFragment = FavoriteMoviesFragment()
     }
-    private fun showMovieDetails(movie: Movie, view1: View,view2:View) {
+    private fun showMovieDetails(movie: Movie, view1: View, view2:View) {
         val intent = Intent(activity, MovieDetailActivity::class.java).apply {
             putExtra("movie_title", movie.title)
         }

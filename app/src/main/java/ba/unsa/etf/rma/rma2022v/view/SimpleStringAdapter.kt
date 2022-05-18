@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v
+package ba.unsa.etf.rma.rma2022v.view
 
 import android.view.LayoutInflater
 import android.view.View

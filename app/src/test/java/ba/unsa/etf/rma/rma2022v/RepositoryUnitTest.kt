@@ -1,5 +1,7 @@
 package ba.unsa.etf.rma.rma2022v
 
+import ba.unsa.etf.rma.rma2022v.data.Movie
+import ba.unsa.etf.rma.rma2022v.data.MovieRepository
 import org.hamcrest.Matchers.hasItem
 import org.junit.Test
 import org.hamcrest.CoreMatchers.`is` as Is

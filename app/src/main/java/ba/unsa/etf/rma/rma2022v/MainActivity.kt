@@ -5,14 +5,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.transition.Fade
-import android.util.Log
 import android.view.Window
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import ba.unsa.etf.rma.rma2022v.view.FavoriteMoviesFragment
+import ba.unsa.etf.rma.rma2022v.view.RecentMoviesFragment
+import ba.unsa.etf.rma.rma2022v.view.SearchFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 

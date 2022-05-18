@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ba.unsa.etf.rma.rma2022v.view.SimpleStringAdapter
+import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
 
 class SimilarFragment(movieName:String): Fragment() {
     private var movieName:String = movieName
-    private var movieDetailViewModel =  MovieDetailViewModel()
+    private var movieDetailViewModel =  MovieDetailViewModel(null)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

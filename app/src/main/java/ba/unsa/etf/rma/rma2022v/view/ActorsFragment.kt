@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v
+package ba.unsa.etf.rma.rma2022v.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ba.unsa.etf.rma.rma2022v.R
+import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
 
 class ActorsFragment(movieName:String) : Fragment() {
     private var movieName:String = movieName
-    private var movieDetailViewModel =  MovieDetailViewModel()
+    private var movieDetailViewModel =  MovieDetailViewModel(null)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

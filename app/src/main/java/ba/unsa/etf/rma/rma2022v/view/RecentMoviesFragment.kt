@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.rma2022v
+package ba.unsa.etf.rma.rma2022v.view
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -9,6 +9,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ba.unsa.etf.rma.rma2022v.MovieDetailActivity
+import ba.unsa.etf.rma.rma2022v.R
+import ba.unsa.etf.rma.rma2022v.data.Movie
+import ba.unsa.etf.rma.rma2022v.viewmodel.MovieListViewModel
 import android.util.Pair as UtilPair
 
 class RecentMoviesFragment : Fragment() {
@@ -17,7 +21,7 @@ class RecentMoviesFragment : Fragment() {
     }
     private lateinit var recentMovies: RecyclerView
     private lateinit var recentMoviesAdapter: MovieListAdapter
-    private var movieListViewModel =  MovieListViewModel()
+    private var movieListViewModel =  MovieListViewModel(null, null)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.recents_fragment, container, false)
         recentMovies = view.findViewById(R.id.recentMovies)
@@ -27,7 +31,7 @@ class RecentMoviesFragment : Fragment() {
         recentMoviesAdapter.updateMovies(movieListViewModel.getRecentMovies())
         return view
     }
-    private fun showMovieDetails(movie: Movie, view1: View,view2:View) {
+    private fun showMovieDetails(movie: Movie, view1: View, view2:View) {
         val intent = Intent(activity, MovieDetailActivity::class.java).apply {
             putExtra("movie_title", movie.title)
         }

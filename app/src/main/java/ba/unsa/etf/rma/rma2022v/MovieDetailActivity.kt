@@ -10,12 +10,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import ba.unsa.etf.rma.rma2022v.data.Movie
+import ba.unsa.etf.rma.rma2022v.view.ActorsFragment
+import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 
 
 class MovieDetailActivity : AppCompatActivity() {
-    private var movieDetailViewModel =  MovieDetailViewModel()
+    private var movieDetailViewModel =  MovieDetailViewModel(this@MovieDetailActivity::populateDetails)
+    private var movieId: Long = 0
+
     private lateinit var movie: Movie
     private lateinit var title : TextView
     private lateinit var overview : TextView
@@ -26,21 +32,22 @@ class MovieDetailActivity : AppCompatActivity() {
 
     private lateinit var bottomNav: BottomNavigationView
 
-    private val mOnItemSelectedListener = NavigationBarView.OnItemSelectedListener{ item ->
-        when(item.itemId){
-            R.id.navigation_actors -> {
-                var actorsFragment = ActorsFragment(movie.title)
-                openFragment(actorsFragment)
-                return@OnItemSelectedListener true
-            }
-            R.id.navigation_similar -> {
-                var similarFragment = SimilarFragment(movie.title)
-                openFragment(similarFragment)
-                return@OnItemSelectedListener true
-            }
-        }
-        false
-    }
+    private val posterPath = "https://image.tmdb.org/t/p/w342"
+//    private val mOnItemSelectedListener = NavigationBarView.OnItemSelectedListener{ item ->
+//        when(item.itemId){
+//            R.id.navigation_actors -> {
+//                var actorsFragment = ActorsFragment(movie.title)
+//                openFragment(actorsFragment)
+//                return@OnItemSelectedListener true
+//            }
+//            R.id.navigation_similar -> {
+//                var similarFragment = SimilarFragment(movie.title)
+//                openFragment(similarFragment)
+//                return@OnItemSelectedListener true
+//            }
+//        }
+//        false
+//    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie_detail)
@@ -52,8 +59,8 @@ class MovieDetailActivity : AppCompatActivity() {
         website = findViewById(R.id.movie_website)
         val extras = intent.extras
         if (extras != null) {
-            movie = movieDetailViewModel.getMovieByTitle(extras.getString("movie_title",""))
-            populateDetails()
+            movieDetailViewModel.getMovieDetails(extras.getLong("movie_id",0L))
+            movieId = extras.getLong("movie_id",0L)
         } else {
             finish()
         }
@@ -64,9 +71,9 @@ class MovieDetailActivity : AppCompatActivity() {
             searchTrailer()
         }
 
-        bottomNav = findViewById(R.id.detail_navigation)
-        bottomNav.setOnItemSelectedListener (mOnItemSelectedListener)
-        bottomNav.selectedItemId = R.id.navigation_actors
+//        bottomNav = findViewById(R.id.detail_navigation)
+//        bottomNav.setOnItemSelectedListener (mOnItemSelectedListener)
+//        bottomNav.selectedItemId = R.id.navigation_actors
     }
 
     private fun searchTrailer() {
@@ -90,18 +97,25 @@ class MovieDetailActivity : AppCompatActivity() {
 
     }
 
-    private fun populateDetails() {
-        title.text=movie.title
-        releaseDate.text=movie.releaseDate
-        genre.text=movie.genre
-        website.text=movie.homepage
-        overview.text=movie.overview
-        val context: Context = poster.context
-        var id: Int = context.resources
-            .getIdentifier(movie.genre, "drawable", context.packageName)
-        if (id===0) id=context.resources
-            .getIdentifier("other", "drawable", context.packageName)
-        poster.setImageResource(id)
+    private fun populateDetails(movie: Movie) {
+            title.text = movie.title
+            overview.text = movie.overview
+            releaseDate.text = movie.releaseDate
+            genre.text = movie.genre
+            website.text = movie.homepage
+
+            val posterContext = poster.context
+            var id: Int = posterContext.resources.getIdentifier(movie.genre, "drawable", posterContext.packageName)
+            if (id == 0) id = posterContext.resources
+                .getIdentifier("movie", "drawable", posterContext.packageName)
+            poster.setImageResource(id)
+            Glide.with(posterContext)
+                .load(posterPath + movie.posterPath)
+                .centerCrop()
+                .placeholder(R.drawable.drama)
+                .error(id)
+                .fallback(id)
+                .into(poster)
     }
     private fun showWebsite(){
         val webIntent: Intent = Uri.parse(movie.homepage).let { webpage ->
