@@ -3,6 +3,7 @@ package ba.unsa.etf.rma.rma2022v.view
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Pair.create
 import android.view.LayoutInflater
 import android.view.View
@@ -55,6 +56,7 @@ class SearchFragment : Fragment() {
                 putString("search", search)
             }
         }
+        fun newInstance(): SearchFragment = SearchFragment()
     }
     private fun onClick() {
         val toast = Toast.makeText(context, "Search start", Toast.LENGTH_SHORT)
@@ -75,8 +77,8 @@ class SearchFragment : Fragment() {
             putExtra("movie_id", movie.id)
         }
 
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity, UtilPair.create(view1,"poster"),
-            UtilPair.create(view2,"title"))
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity, create(view1,"poster"),
+            create(view2,"title"))
 
         startActivity(intent,options.toBundle())
     }

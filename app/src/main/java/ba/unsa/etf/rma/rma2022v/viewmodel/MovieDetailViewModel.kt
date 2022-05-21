@@ -11,7 +11,9 @@ import kotlinx.coroutines.launch
 import ba.unsa.etf.rma.rma2022v.data.Result
 
 
-class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?) {
+class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?,
+                           private val moviesRetrieved: ((movies: List<String>) -> Unit)?,
+                           private val actorsRetrieved: ((actors: List<String>) -> Unit)?) {
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
     fun getMovieByTitle(name:String): Movie {
@@ -39,6 +41,28 @@ class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?
                     is Result.Success<Movie> -> movieRetrieved?.invoke(result.data)
                     else-> Log.i("error","error")
                 }
+            }
+        }
+    }
+    fun getSimilarMoviesById(id: Long){
+        scope.launch{
+            // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
+            val result = MovieRepository.similarMoviesRequest(id)
+            // Prikaže se rezultat korisniku na glavnoj niti
+            when (result) {
+                is Result.Success<List<String>> -> moviesRetrieved?.invoke(result.data)
+                else-> Log.i("error","similarMovies")
+            }
+        }
+    }
+    fun getActorsById(id: Long) {
+        scope.launch{
+            // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
+            val result = ActorMovieRepository.actorsRequest(id)
+            // Prikaže se rezultat korisniku na glavnoj niti
+            when (result) {
+                is Result.Success<List<String>> -> actorsRetrieved?.invoke(result.data)
+                else-> Log.i("error","actors")
             }
         }
     }

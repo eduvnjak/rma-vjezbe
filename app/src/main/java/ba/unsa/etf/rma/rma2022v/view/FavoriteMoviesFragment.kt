@@ -19,12 +19,13 @@ class FavoriteMoviesFragment : Fragment() {
     private lateinit var favoriteMovies: RecyclerView
     private lateinit var favoriteMoviesAdapter: MovieListAdapter
     private var movieListViewModel =  MovieListViewModel(null, null)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.favorites_fragment, container, false)
         favoriteMovies = view.findViewById(R.id.favoriteMovies)
         favoriteMovies.layoutManager = GridLayoutManager(activity, 2)
         favoriteMoviesAdapter = MovieListAdapter(arrayListOf()) { movie,view1,view2 -> showMovieDetails(movie,view1,view2) }
-        favoriteMovies.adapter=favoriteMoviesAdapter
+        favoriteMovies.adapter = favoriteMoviesAdapter
         favoriteMoviesAdapter.updateMovies(movieListViewModel.getFavoriteMovies())
         return view
     }

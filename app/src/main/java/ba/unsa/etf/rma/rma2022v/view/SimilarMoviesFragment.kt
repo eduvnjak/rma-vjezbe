@@ -10,20 +10,34 @@ import androidx.recyclerview.widget.RecyclerView
 import ba.unsa.etf.rma.rma2022v.view.SimpleStringAdapter
 import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
 
-class SimilarFragment(movieName:String): Fragment() {
-    private var movieName:String = movieName
-    private var movieDetailViewModel =  MovieDetailViewModel(null)
+class SimilarMoviesFragment(private val movieName: String, private val movieId: Long?): Fragment() {
+    private lateinit var moviesRv: RecyclerView
+
+    private var movieDetailViewModel =  MovieDetailViewModel(null,this@SimilarMoviesFragment::populateMovies,null)
+    private lateinit var moviesRvSimpleAdapter: SimpleStringAdapter
+
+    private var moviesList = listOf<String>()
+
+    private fun populateMovies(movies: List<String>) {
+        moviesList = movies
+        moviesRvSimpleAdapter.list = movies
+        moviesRvSimpleAdapter.notifyDataSetChanged()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         var view: View = inflater.inflate(R.layout.similar_movies_fragment, container, false)
-        var movieList = movieDetailViewModel.getSimilarMoviesByTitle(movieName)
-        var movieRV = view.findViewById<RecyclerView>(R.id.list_similar_movies)
-        movieRV.layoutManager = LinearLayoutManager(activity)
-        var actorsRVSimpleAdapter = SimpleStringAdapter(movieList)
-        movieRV.adapter = actorsRVSimpleAdapter
+        moviesRv = view.findViewById<RecyclerView>(R.id.list_similar_movies)
+
+        moviesList = movieName.let { movieDetailViewModel.getSimilarMoviesByTitle(it) }
+        moviesRv.layoutManager = LinearLayoutManager(activity)
+        moviesRvSimpleAdapter = SimpleStringAdapter(moviesList)
+        moviesRv.adapter = moviesRvSimpleAdapter
+
+        movieId?.let { movieDetailViewModel.getSimilarMoviesById(it)}
         return view
     }
 }

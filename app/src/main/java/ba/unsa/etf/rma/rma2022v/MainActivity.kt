@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnItemSelectedListener true
             }
             R.id.navigation_search -> {
-                val searchFragment = SearchFragment.newInstance(" ")
+                val searchFragment = SearchFragment.newInstance()
                 openFragment(searchFragment)
                 return@OnItemSelectedListener true
             }

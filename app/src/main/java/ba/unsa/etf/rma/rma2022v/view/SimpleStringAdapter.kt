@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class SimpleStringAdapter(list: List<String>) :RecyclerView.Adapter<SimpleStringAdapter.SimpleViewHolder>() {
+class SimpleStringAdapter(list: List<String>): RecyclerView.Adapter<SimpleStringAdapter.SimpleViewHolder>() {
 
     var list = list
     inner class SimpleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

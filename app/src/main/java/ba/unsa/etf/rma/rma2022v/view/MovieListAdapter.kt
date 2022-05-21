@@ -30,10 +30,10 @@ class MovieListAdapter(
         val context: Context = holder.movieImage.getContext()
         var id = 0
         if (genreMatch!==null)
-            id = context.getResources()
-                .getIdentifier(genreMatch, "drawable", context.getPackageName())
-        if (id==0) id=context.getResources()
-            .getIdentifier("picture1", "drawable", context.getPackageName())
+            id = context.resources
+                .getIdentifier(genreMatch, "drawable", context.packageName)
+        if (id==0) id=context.resources
+            .getIdentifier("drama", "drawable", context.packageName)
         Glide.with(context)
             .load(posterPath + movies[position].posterPath)
             .centerCrop()

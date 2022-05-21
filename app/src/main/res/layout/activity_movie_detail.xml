@@ -6,9 +6,13 @@
     android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/detail_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -17,7 +21,7 @@
             <FrameLayout
                 android:id="@+id/detail_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -27,13 +31,22 @@
 
             <ImageView
                 android:id="@+id/movie_backdrop"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/backdrop_guideline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/backdrop" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/detail_container"
+                app:layout_constraintTop_toTopOf="@+id/backdrop_guideline">
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/movie_title"
@@ -45,11 +58,10 @@
                 android:textColor="@android:color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
+                android:transitionName="title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/movie_poster_card"
-                app:layout_constraintTop_toBottomOf="@+id/backdrop_guideline"
-                android:transitionName="title"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/backdrop_guideline" />
 
             <TextView
                 android:id="@+id/movie_release_date"
@@ -76,8 +88,9 @@
                 android:layout_marginTop="24dp"
                 android:textColor="@color/teal_200"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/movie_poster_card"
-                app:layout_constraintTop_toBottomOf="@id/movie_poster_card" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/movie_genre" />
 
             <TextView
                 android:id="@+id/movie_overview"
@@ -106,8 +119,7 @@
                     android:id="@+id/movie_poster"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:transitionName="poster"
-                    />
+                    android:transitionName="poster" />
 
             </androidx.cardview.widget.CardView>
 
@@ -124,7 +136,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.4" />
+                app:layout_constraintGuide_percent="0.26" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -147,13 +159,12 @@
         android:id="@+id/detail_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:backgroundTint="@color/white"
+        app:itemIconTint="@color/purple_500"
+        app:itemTextColor="@color/purple_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/movie_extra_info"
-        app:layout_constraintVertical_bias="1.0"
-        app:itemIconTint="@color/purple_500"
-        app:itemTextColor="@color/purple_700"
-        app:backgroundTint="@color/white"/>
+        app:layout_constraintTop_toBottomOf="@id/scrollView"
+        app:menu="@menu/movie_extra_info" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -22,12 +22,13 @@ class RecentMoviesFragment : Fragment() {
     private lateinit var recentMovies: RecyclerView
     private lateinit var recentMoviesAdapter: MovieListAdapter
     private var movieListViewModel =  MovieListViewModel(null, null)
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view =  inflater.inflate(R.layout.recents_fragment, container, false)
         recentMovies = view.findViewById(R.id.recentMovies)
         recentMovies.layoutManager = GridLayoutManager(activity, 2)
         recentMoviesAdapter = MovieListAdapter(arrayListOf()) { movie,view1,view2 -> showMovieDetails(movie,view1,view2) }
-        recentMovies.adapter=recentMoviesAdapter
+        recentMovies.adapter = recentMoviesAdapter
         recentMoviesAdapter.updateMovies(movieListViewModel.getRecentMovies())
         return view
     }

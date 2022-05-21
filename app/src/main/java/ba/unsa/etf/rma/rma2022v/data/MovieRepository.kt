@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.rma2022v.data
 
+import ba.unsa.etf.rma.rma2022v.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONException
@@ -10,12 +11,9 @@ import java.net.MalformedURLException
 import java.net.URL
 
 object MovieRepository {
-//    private val tmdb_api_key = BuildConfig.TMDB_API_KEY sredi ovo
-    private val tmdb_api_key = "ac0f4c6eb8504d19d9f139adedafb2e3"
+    private val tmdb_api_key = BuildConfig.TMDB_API_KEY
 
-    suspend fun searchRequest(
-        query: String
-    ): Result<List<Movie>> {
+    suspend fun searchRequest(query: String): Result<List<Movie>> {
         return withContext(Dispatchers.IO) {
             try {
                 val movies = arrayListOf<Movie>()
@@ -75,6 +73,35 @@ object MovieRepository {
             }
         }
     }
+    suspend fun similarMoviesRequest(id: Long): Result<List<String>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val movies = arrayListOf<String>()
+                val url1 = "https://api.themoviedb.org/3/movie/$id/similar?api_key=$tmdb_api_key" //1
+                val url = URL(url1)
+                (url.openConnection() as? HttpURLConnection)?.run { //3
+                    val result = this.inputStream.bufferedReader().use { it.readText() } //4
+                    val jo = JSONObject(result)//5
+                    val results = jo.getJSONArray("results")//6
+                    for (i in 0 until results.length()) {//7
+                        val movie = results.getJSONObject(i)
+                        val title = movie.getString("title")
+                        movies.add(title)
+                        if (i == 5) break
+                    }
+                }
+                return@withContext Result.Success(movies)
+            }
+            catch (e: MalformedURLException) {
+                return@withContext Result.Error(Exception("Cannot open HttpURLConnection"))
+            } catch (e: IOException) {
+                return@withContext Result.Error(Exception("Cannot read stream"))
+            } catch (e: JSONException) {
+                return@withContext Result.Error(Exception("Cannot parse JSON"))
+            }
+        }
+    }
+
     fun getFavoriteMovies() : List<Movie> {
         return favoriteMovies()
     }
