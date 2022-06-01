@@ -1,14 +1,11 @@
 package ba.unsa.etf.rma.rma2022v.viewmodel
 
 import android.util.Log
-import ba.unsa.etf.rma.rma2022v.data.ActorMovieRepository
-import ba.unsa.etf.rma.rma2022v.data.MovieRepository
-import ba.unsa.etf.rma.rma2022v.data.Movie
+import ba.unsa.etf.rma.rma2022v.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ba.unsa.etf.rma.rma2022v.data.Result
 
 
 class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?,
@@ -35,10 +32,10 @@ class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?
         else {
             scope.launch{
                 // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
-                val result = MovieRepository.movieDetailsRequest(id)
+                val result = MovieRepository.getMovieDetails(id)
                 // Prikaže se rezultat korisniku na glavnoj niti
                 when (result) {
-                    is Result.Success<Movie> -> movieRetrieved?.invoke(result.data)
+                    is Movie -> movieRetrieved?.invoke(result)
                     else-> Log.i("error","error")
                 }
             }
@@ -47,10 +44,10 @@ class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?
     fun getSimilarMoviesById(id: Long){
         scope.launch{
             // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
-            val result = MovieRepository.similarMoviesRequest(id)
+            val result = MovieRepository.getSimilarMovies(id)
             // Prikaže se rezultat korisniku na glavnoj niti
             when (result) {
-                is Result.Success<List<String>> -> moviesRetrieved?.invoke(result.data)
+                is GetMoviesResponse -> moviesRetrieved?.invoke(result.movies.map { movie -> movie.title })
                 else-> Log.i("error","similarMovies")
             }
         }
@@ -58,13 +55,24 @@ class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?
     fun getActorsById(id: Long) {
         scope.launch{
             // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
-            val result = ActorMovieRepository.actorsRequest(id)
+            val result = ActorMovieRepository.getMovieActors(id)
             // Prikaže se rezultat korisniku na glavnoj niti
             when (result) {
-                is Result.Success<List<String>> -> actorsRetrieved?.invoke(result.data)
+                is GetCreditsResponse -> actorsRetrieved?.invoke(result.actors)
                 else-> Log.i("error","actors")
             }
         }
+    }
+    fun getMovieById(id: Long): Movie {
+        var movie = Movie(0,"test","test","test","test","test",null)
+        scope.launch{
+            // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
+            // Prikaže se rezultat korisniku na glavnoj niti
+            val result = MovieRepository.getMovieDetails(id)
+            if (result != null)
+                movie = result
+        }
+        return movie
     }
     fun getActorsByTitle(actorName: String): List<String> {
         return ActorMovieRepository.getActorMovies()?.get(actorName)?: emptyList()

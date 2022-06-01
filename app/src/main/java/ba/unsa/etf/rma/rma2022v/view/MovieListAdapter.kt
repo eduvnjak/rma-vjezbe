@@ -26,7 +26,8 @@ class MovieListAdapter(
     override fun getItemCount(): Int = movies.size
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.movieTitle.text = movies[position].title
-        val genreMatch: String? = movies[position].genre
+//        val genreMatch: String? = movies[position].genre
+        val genreMatch = "drama"
         val context: Context = holder.movieImage.getContext()
         var id = 0
         if (genreMatch!==null)
@@ -34,6 +35,7 @@ class MovieListAdapter(
                 .getIdentifier(genreMatch, "drawable", context.packageName)
         if (id==0) id=context.resources
             .getIdentifier("drama", "drawable", context.packageName)
+
         Glide.with(context)
             .load(posterPath + movies[position].posterPath)
             .centerCrop()
@@ -42,14 +44,6 @@ class MovieListAdapter(
             .fallback(id)
             .into(holder.movieImage)
 
-//        val genreMatch: String = movies[position].genre
-//        //Pronalazimo id drawable elementa na osnovu naziva žanra
-//        val context: Context = holder.movieImage.getContext()
-//        var id: Int = context.getResources()
-//            .getIdentifier(genreMatch, "drawable", context.getPackageName())
-//        if (id==0) id=context.getResources()
-//            .getIdentifier("other", "drawable", context.getPackageName())
-//        holder.movieImage.setImageResource(id)
         holder.itemView.setOnClickListener{ onItemClicked(movies[position],holder.movieImage,holder.movieTitle) }
     }
     fun updateMovies(movies: List<Movie>) {

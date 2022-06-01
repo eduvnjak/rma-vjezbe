@@ -27,10 +27,13 @@ class MovieDetailActivity : AppCompatActivity() {
     private lateinit var genre : TextView
     private lateinit var website : TextView
     private lateinit var poster : ImageView
+    private lateinit var backDrop: ImageView
+
 
     private lateinit var bottomNav: BottomNavigationView
 
     private val posterPath = "https://image.tmdb.org/t/p/w342"
+    private val backdropPath = "https://image.tmdb.org/t/p/w500"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,8 @@ class MovieDetailActivity : AppCompatActivity() {
         genre = findViewById(R.id.movie_genre)
         poster = findViewById(R.id.movie_poster)
         website = findViewById(R.id.movie_website)
+        backDrop = findViewById(R.id.movie_backdrop)
+
 
         val extras = intent.extras
         if (extras != null) {
@@ -101,14 +106,17 @@ class MovieDetailActivity : AppCompatActivity() {
         title.text = movie.title
         overview.text = movie.overview
         releaseDate.text = movie.releaseDate
-        genre.text = movie.genre
+//        genre.text = movie.genre
         website.text = movie.homepage
 
         val posterContext = poster.context
-        var id: Int = posterContext.resources.getIdentifier(movie.genre, "drawable", posterContext.packageName)
+//        var id: Int = posterContext.resources.getIdentifier(movie.genre, "drawable", posterContext.packageName)
+        var id: Int = posterContext.resources.getIdentifier("drama", "drawable", posterContext.packageName)
+
         if (id == 0) id = posterContext.resources
             .getIdentifier("drama", "drawable", posterContext.packageName)
         poster.setImageResource(id)
+
         Glide.with(posterContext)
             .load(posterPath + movie.posterPath)
             .centerCrop()
@@ -116,6 +124,14 @@ class MovieDetailActivity : AppCompatActivity() {
             .error(id)
             .fallback(id)
             .into(poster)
+        val backdropContext = backDrop.context
+        Glide.with(backdropContext)
+            .load(backdropPath + movie.backdropPath)
+            .centerCrop()
+            .placeholder(R.drawable.backdrop)
+            .error(R.drawable.backdrop)
+            .fallback(R.drawable.backdrop)
+            .into(backDrop)
     }
     private fun showWebsite(){
         val webIntent: Intent = Uri.parse(movie.homepage).let { webpage ->

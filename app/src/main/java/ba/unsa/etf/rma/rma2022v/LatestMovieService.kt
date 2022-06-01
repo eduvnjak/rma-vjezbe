@@ -117,7 +117,7 @@ class LatestMovieService : Service() {
                 movie.overview = jsonObject.getString("overview")
                 //Radi očuvanja pristojnosti
                 if (!jsonObject.getBoolean("adult")) {
-//                    movie.backdropPath = jsonObject.getString("backdrop_path")
+                    movie.backdropPath = jsonObject.getString("backdrop_path")
                     movie.posterPath = jsonObject.getString("poster_path")
                 }
             }
