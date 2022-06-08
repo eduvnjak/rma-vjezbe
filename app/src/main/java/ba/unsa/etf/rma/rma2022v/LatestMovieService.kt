@@ -30,55 +30,24 @@ class LatestMovieService : Service() {
     //api ključ
     private val tmdb_api_key : String = BuildConfig.TMDB_API_KEY
     //primjer filma- novi filmovi ne moraju sadržavati sve podatke
-    private var movie = Movie(1,"test","test","test","test","test","test")
+    private var movie = Movie(1,"test","test","test","test","test")
 
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
+
     override fun onCreate() {
         super.onCreate()
         val notification = createNotification()
         startForeground(1, notification)
     }
-    private fun createNotification(): Notification {
-        val notificationChannelId = "LATEST MOVIE SERVICE CHANNEL"
-        //Različite metode kreiranja notifikacije
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            //Kreiramo notifikacijski kanal - notifikaicje se šalju na isti kanal
-            val channel = NotificationChannel(
-                notificationChannelId,
-                "Latest Movie notifications channel",
-                NotificationManager.IMPORTANCE_HIGH
-            ).let {
-                //Definišemo karakteristike notifikacije
-                it.description = "Latest Movie Service channel"
-                it.enableLights(true)
-                it.lightColor = Color.RED
-                it.enableVibration(true)
-                it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-                it
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-        //gradimo notifikaciju u ovisnosti od verzije
-        val builder: Notification.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(
-            this,
-            notificationChannelId
-        ) else Notification.Builder(this)
-        //Kreira se notifikacija koja će se prikazati kada se servis pokrene
-        return builder
-            .setContentTitle("Finding latest film")
-            .setSmallIcon(android.R.drawable.ic_popup_sync)
-            .setTicker("Film")
-            .setPriority(Notification.PRIORITY_HIGH) // ako je ispod api 26
-            .build()
-    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startService()
         // servis će se restartovati ako ovo vratimo
         return START_STICKY
     }
+
     private fun startService() {
         //U slučaju da se ponovo pokrene ne mora se pozivati ova metoda
         if (isServiceStarted) return
@@ -102,6 +71,7 @@ class LatestMovieService : Service() {
             }
         }
     }
+
     private fun getData() {
         try {
             val url1 =
@@ -113,7 +83,7 @@ class LatestMovieService : Service() {
                 movie.title = jsonObject.getString("title")
                 movie.id = jsonObject.getLong("id")
                 movie.releaseDate = jsonObject.getString("release_date")
-                movie.homepage = jsonObject.getString("homepage")
+//                movie.homepage = jsonObject.getString("homepage")
                 movie.overview = jsonObject.getString("overview")
                 //Radi očuvanja pristojnosti
                 if (!jsonObject.getBoolean("adult")) {
@@ -152,4 +122,38 @@ class LatestMovieService : Service() {
         }
     }
 
+    private fun createNotification(): Notification {
+        val notificationChannelId = "LATEST MOVIE SERVICE CHANNEL"
+        //Različite metode kreiranja notifikacije
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            //Kreiramo notifikacijski kanal - notifikaicje se šalju na isti kanal
+            val channel = NotificationChannel(
+                notificationChannelId,
+                "Latest Movie notifications channel",
+                NotificationManager.IMPORTANCE_HIGH
+            ).let {
+                //Definišemo karakteristike notifikacije
+                it.description = "Latest Movie Service channel"
+                it.enableLights(true)
+                it.lightColor = Color.RED
+                it.enableVibration(true)
+                it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+                it
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+        //gradimo notifikaciju u ovisnosti od verzije
+        val builder: Notification.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(
+            this,
+            notificationChannelId
+        ) else Notification.Builder(this)
+        //Kreira se notifikacija koja će se prikazati kada se servis pokrene
+        return builder
+            .setContentTitle("Finding latest film")
+            .setSmallIcon(android.R.drawable.ic_popup_sync)
+            .setTicker("Film")
+            .setPriority(Notification.PRIORITY_HIGH) // ako je ispod api 26
+            .build()
+    }
 }

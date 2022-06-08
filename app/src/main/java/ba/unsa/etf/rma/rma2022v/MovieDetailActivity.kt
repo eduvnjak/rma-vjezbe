@@ -1,39 +1,36 @@
 package ba.unsa.etf.rma.rma2022v
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import ba.unsa.etf.rma.rma2022v.data.Movie
-import ba.unsa.etf.rma.rma2022v.view.ActorsFragment
-import ba.unsa.etf.rma.rma2022v.view.SearchFragment.Companion.newInstance
+import ba.unsa.etf.rma.rma2022v.view.AdditionalInfoFragment
 import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class MovieDetailActivity : AppCompatActivity() {
-    private var movieDetailViewModel =  MovieDetailViewModel(this@MovieDetailActivity::populateDetails, null, null)
-    private var movie = Movie(0,"Test","Test","Test","Test","Test","Test")
-
-    private lateinit var title : TextView
-    private lateinit var overview : TextView
-    private lateinit var releaseDate : TextView
+    private var movieDetailViewModel = MovieDetailViewModel(this@MovieDetailActivity::populateDetails,null)
+    private lateinit var title: TextView
+    private lateinit var overview: TextView
+    private lateinit var date: TextView
     private lateinit var genre : TextView
     private lateinit var website : TextView
     private lateinit var poster : ImageView
     private lateinit var backDrop: ImageView
-
-
-    private lateinit var bottomNav: BottomNavigationView
-
+    private lateinit var navBar: BottomNavigationView
+    private lateinit var addTOFav: Button
+    private var movie: Movie? = null
     private val posterPath = "https://image.tmdb.org/t/p/w342"
     private val backdropPath = "https://image.tmdb.org/t/p/w500"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,89 +38,126 @@ class MovieDetailActivity : AppCompatActivity() {
 
         title = findViewById(R.id.movie_title)
         overview = findViewById(R.id.movie_overview)
-        releaseDate = findViewById(R.id.movie_release_date)
+        date = findViewById(R.id.movie_release_date)
         genre = findViewById(R.id.movie_genre)
-        poster = findViewById(R.id.movie_poster)
         website = findViewById(R.id.movie_website)
+        poster = findViewById(R.id.movie_poster)
         backDrop = findViewById(R.id.movie_backdrop)
-
+        navBar = findViewById(R.id.detail_navigation)
+        addTOFav = findViewById(R.id.addToFavBtn)
 
         val extras = intent.extras
+
         if (extras != null) {
-            if (extras.containsKey("movie_title")) {
-                movie = movieDetailViewModel.getMovieByTitle(extras.getString("movie_title", ""))
-                populateDetails(movie)
-            }
-            else if (extras.containsKey("movie_id")){
-                movieDetailViewModel.getMovieDetails(extras.getLong("movie_id"))
-            }
-        } else {
+            movieDetailViewModel.getMovieDetails(extras.getLong("movie_id",0L))
+        }
+        else {
             finish()
         }
-        website.setOnClickListener{
-            showWebsite()
-        }
-        title.setOnClickListener {
-            searchTrailer()
-        }
 
-        bottomNav = findViewById(R.id.detail_navigation)
-        bottomNav.setOnItemSelectedListener OnItemSelectedListener@{ item ->
+        navBar.setOnItemSelectedListener {item ->
             when (item.itemId) {
                 R.id.navigation_actors -> {
-                    val actorsFragment = ActorsFragment(movie.title, movie.id)
-                    openFragment(actorsFragment)
-                    return@OnItemSelectedListener true
+                    val actorsFragment = AdditionalInfoFragment.newInstance(movie!!.id)
+                    openFragment(actorsFragment,"actors")
+                    return@setOnItemSelectedListener true
                 }
                 R.id.navigation_similar -> {
-                    val actorsFragment = SimilarMoviesFragment(movie.title, movie.id)
-                    openFragment(actorsFragment)
-                    return@OnItemSelectedListener true
+                    val actorsFragment = AdditionalInfoFragment.newInstance(movie!!.id)
+                    openFragment(actorsFragment,"similar movies")
+                    return@setOnItemSelectedListener true
                 }
+                else -> return@setOnItemSelectedListener false
             }
-            false
         }
 
-        bottomNav.selectedItemId = R.id.navigation_actors
+        website.setOnClickListener {
+            showWebsite()
+        }
+
+        title.setOnClickListener {
+            openVideoTrailer()
+        }
+
+        addTOFav.setOnClickListener{
+            writeDB()
+        }
     }
 
-    private fun searchTrailer() {
-        val youtubeIntent: Intent = Intent(Intent.ACTION_SEARCH).apply {
-            setPackage("com.google.android.youtube")
-            putExtra("query", movie.title + " trailer")
-        }
-        try {
-            startActivity(youtubeIntent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this,"Nema YouTube aplikacije",Toast.LENGTH_LONG).show()
-        }
+    fun writeDB(){
+        movieDetailViewModel.writeDB(applicationContext,this.movie!!,onSuccess = ::onSuccess1,
+            onError = ::onError)
+    }
+    fun onSuccess1(message:String){
+        val toast = Toast.makeText(applicationContext, "Spaseno", Toast.LENGTH_SHORT)
+        toast.show()
+        addTOFav.visibility = View.GONE
+    }
+    fun onError() {
+        val toast = Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT)
+        toast.show()
+    }
 
+    private fun openFragment(fragment: Fragment,tag: String) {
+        val transaction = supportFragmentManager.beginTransaction()
+        val naStacku = supportFragmentManager.findFragmentByTag(tag)
+        if (naStacku != null)
+            transaction.replace(R.id.detail_container,naStacku,tag)
+        else {
+            transaction.replace(R.id.detail_container,fragment,tag)
+            transaction.addToBackStack(tag)
+        }
+        transaction.commit()
+    }
+
+    private fun openVideoTrailer() {
+        if (movie != null) {
+            val sendIntent = Intent().apply {
+                action = Intent.ACTION_SEARCH
+                setPackage("com.google.android.youtube")
+                putExtra("query", movie!!.title + " trailer")
+            }
+            if (sendIntent.resolveActivity(packageManager) != null) {
+                startActivity(sendIntent)
+            }
+        }
+    }
+
+    private fun showWebsite() {
+        if (movie != null) {
+            val sendIntent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(movie!!.homepage)
+            }
+            if (sendIntent.resolveActivity(packageManager) != null) {
+                startActivity(sendIntent)
+            }
+        }
     }
 
     private fun populateDetails(movie: Movie) {
         this.movie = movie
-
         title.text = movie.title
         overview.text = movie.overview
-        releaseDate.text = movie.releaseDate
+        date.text = movie.releaseDate
 //        genre.text = movie.genre
-        website.text = movie.homepage
+        if (movie.homepage != null)
+            website.text = movie.homepage
+        else website.text = "website"
 
         val posterContext = poster.context
 //        var id: Int = posterContext.resources.getIdentifier(movie.genre, "drawable", posterContext.packageName)
-        var id: Int = posterContext.resources.getIdentifier("drama", "drawable", posterContext.packageName)
-
+        var id: Int = posterContext.resources.getIdentifier("movie", "drawable", posterContext.packageName)
         if (id == 0) id = posterContext.resources
-            .getIdentifier("drama", "drawable", posterContext.packageName)
+            .getIdentifier("movie", "drawable", posterContext.packageName)
         poster.setImageResource(id)
-
         Glide.with(posterContext)
             .load(posterPath + movie.posterPath)
-            .centerCrop()
             .placeholder(R.drawable.drama)
             .error(id)
             .fallback(id)
             .into(poster)
+
         val backdropContext = backDrop.context
         Glide.with(backdropContext)
             .load(backdropPath + movie.backdropPath)
@@ -132,21 +166,5 @@ class MovieDetailActivity : AppCompatActivity() {
             .error(R.drawable.backdrop)
             .fallback(R.drawable.backdrop)
             .into(backDrop)
-    }
-    private fun showWebsite(){
-        val webIntent: Intent = Uri.parse(movie.homepage).let { webpage ->
-            Intent(Intent.ACTION_VIEW, webpage)
-        }
-        try {
-            startActivity(webIntent)
-        } catch (e: ActivityNotFoundException) {
-            // Definisati naredbe ako ne postoji aplikacija za navedenu akciju
-        }
-    }
-    private fun openFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.detail_container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
     }
 }

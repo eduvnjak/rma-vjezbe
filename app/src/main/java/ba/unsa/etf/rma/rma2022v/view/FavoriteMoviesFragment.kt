@@ -13,32 +13,53 @@ import ba.unsa.etf.rma.rma2022v.*
 import ba.unsa.etf.rma.rma2022v.data.Movie
 import ba.unsa.etf.rma.rma2022v.viewmodel.MovieListViewModel
 import android.util.Pair as UtilPair
+import android.widget.Toast
 
 
-class FavoriteMoviesFragment : Fragment() {
+class FavoriteMoviesFragment: Fragment() {
     private lateinit var favoriteMovies: RecyclerView
     private lateinit var favoriteMoviesAdapter: MovieListAdapter
-    private var movieListViewModel =  MovieListViewModel(null, null)
+    private var movieListViewModel = MovieListViewModel(null,null)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        context?.let {
+            movieListViewModel.getFavorites(
+                it,onSuccess = ::onSuccess,
+                onError = ::onError)
+        }
+    }
+
+    fun onSuccess(movies:List<Movie>){
+        favoriteMoviesAdapter.updateMovies(movies)
+    }
+    fun onError() {
+        val toast = Toast.makeText(context, "Error", Toast.LENGTH_SHORT)
+        toast.show()
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view =  inflater.inflate(R.layout.favorites_fragment, container, false)
-        favoriteMovies = view.findViewById(R.id.favoriteMovies)
+        var view =  inflater.inflate(R.layout.favorites_fragment, container, false)
+        favoriteMovies = view.findViewById(R.id.recentMovies)
         favoriteMovies.layoutManager = GridLayoutManager(activity, 2)
         favoriteMoviesAdapter = MovieListAdapter(arrayListOf()) { movie,view1,view2 -> showMovieDetails(movie,view1,view2) }
         favoriteMovies.adapter = favoriteMoviesAdapter
         favoriteMoviesAdapter.updateMovies(movieListViewModel.getFavoriteMovies())
         return view
     }
+
     companion object {
         fun newInstance(): FavoriteMoviesFragment = FavoriteMoviesFragment()
     }
-    private fun showMovieDetails(movie: Movie, view1: View, view2:View) {
+
+    private fun showMovieDetails(movie: Movie, view1: View, view2: View) {
         val intent = Intent(activity, MovieDetailActivity::class.java).apply {
-            putExtra("movie_title", movie.title)
+            putExtra("movie_id", movie.id)
         }
-        val options = ActivityOptions
-            .makeSceneTransitionAnimation(activity,  UtilPair.create(view1, "poster"),
-                UtilPair.create(view2, "title"))
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity, UtilPair.create(view1,"poster"),
+            UtilPair.create(view2,"title"))
         startActivity(intent, options.toBundle())
     }
 }

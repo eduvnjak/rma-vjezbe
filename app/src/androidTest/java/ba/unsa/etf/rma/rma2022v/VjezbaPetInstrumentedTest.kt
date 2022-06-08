@@ -23,7 +23,7 @@ class VjezbaPetInstrumentedTest {
         launchActivity<MovieDetailActivity>(pokreniDetalje)
         val actors = MovieDetailViewModel(null).getActorsByTitle("Pride and prejudice")
         for(actor in actors){
-            onView(withId(R.id.list_actors)).check(matches(isDisplayed()))
+            onView(withId(R.id.item_list)).check(matches(isDisplayed()))
         }
     }
 

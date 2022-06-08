@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import ba.unsa.etf.rma.rma2022v.data.Movie
 import com.bumptech.glide.Glide
 
-class MovieDetailResultActivity : AppCompatActivity(){
-    private  var movie = Movie(0, "Test", "Test", "Test", "Test", "Test", "Test")
+class MovieDetailResultActivity : AppCompatActivity() {
+    private  var movie = Movie(0, "Test", "Test", "Test", "Test", "Test")
     private lateinit var title : TextView
     private lateinit var overview : TextView
     private lateinit var releaseDate : TextView
@@ -30,41 +30,43 @@ class MovieDetailResultActivity : AppCompatActivity(){
         poster = findViewById(R.id.movie_poster)
         website = findViewById(R.id.movie_website)
         backdrop = findViewById(R.id.movie_backdrop)
+
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(123)
-        if(intent?.getParcelableExtra<Movie>("movie")!==null) {
-            movie=intent?.getParcelableExtra<Movie>("movie")!!
+
+        if(intent?.getParcelableExtra<Movie>("movie") != null) {
+            movie = intent?.getParcelableExtra<Movie>("movie")!!
             populateDetails()
         }
     }
     private fun populateDetails() {
-        title.text=movie.title
-        releaseDate.text=movie.releaseDate
-//        genre.text=movie.genre
-        website.text=movie.homepage
-        overview.text=movie.overview
-        val context: Context = poster.getContext()
-        var id = 0;
-//        if (movie.genre!==null)
-//            id = context.getResources()
+        title.text = movie.title
+        releaseDate.text = movie.releaseDate
+//        genre.text = movie.genre
+//        website.text = movie.homepage
+        website.text = "website"
+        overview.text = movie.overview
+        val context: Context = poster.context
+        var id = 0
+//        if (movie.genre != null)
+//            id = context.resources
 //                .getIdentifier(movie.genre, "drawable", context.packageName)
-        id = context.getResources().getIdentifier("drama", "drawable", context.packageName)
-        if (id===0) id=context.getResources()
-            .getIdentifier("drama", "drawable", context.packageName)
-
+//        if (id == 0)
+        id=context.resources
+            .getIdentifier("picture1", "drawable", context.packageName)
         Glide.with(context)
             .load(posterPath + movie.posterPath)
             .placeholder(R.drawable.drama)
             .error(id)
             .fallback(id)
-            .into(poster);
-        var backdropContext: Context = backdrop.getContext()
+            .into(poster)
+        val backdropContext: Context = backdrop.context
         Glide.with(backdropContext)
             .load(backdropPath + movie.backdropPath)
             .centerCrop()
             .placeholder(R.drawable.backdrop)
             .error(R.drawable.backdrop)
             .fallback(R.drawable.backdrop)
-            .into(backdrop);
+            .into(backdrop)
     }
 }

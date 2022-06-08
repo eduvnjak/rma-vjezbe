@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.rma2022v.data
 
+import android.content.Context
 import ba.unsa.etf.rma.rma2022v.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -11,29 +12,32 @@ import java.net.MalformedURLException
 import java.net.URL
 
 object MovieRepository {
-    private val tmdb_api_key = BuildConfig.TMDB_API_KEY
+    private const val tmdb_api_key = BuildConfig.TMDB_API_KEY
 
-    suspend fun searchRequest(query: String): GetMoviesResponse? {
+    suspend fun getFavoriteMovies(context: Context) : List<Movie> {
         return withContext(Dispatchers.IO) {
-            var response = ApiAdapter.retrofit.getSearchResults(BuildConfig.TMDB_API_KEY,query)
-            val responseBody = response.body()
-            return@withContext responseBody
+            var db = AppDatabase.getInstance(context)
+            var movies = db!!.movieDao().getAll()
+            return@withContext movies
         }
     }
-    suspend fun getMovieDetails(id: Long): Movie? {
+    suspend fun writeFavorite(context: Context,movie:Movie) : String?{
         return withContext(Dispatchers.IO) {
-            var response = ApiAdapter.retrofit.getMovieDetails(id,BuildConfig.TMDB_API_KEY)
-            val responseBody = response.body()
-            return@withContext responseBody
+            try{
+                var db = AppDatabase.getInstance(context)
+                db!!.movieDao().insertAll(movie)
+                return@withContext "success"
+            }
+            catch(error:Exception){
+                return@withContext null
+            }
         }
     }
-    suspend fun getSimilarMovies(id: Long): GetMoviesResponse? {
-        return withContext(Dispatchers.IO) {
-            var response = ApiAdapter.retrofit.getSimilarMovies(id,BuildConfig.TMDB_API_KEY)
-            val responseBody = response.body()
-            return@withContext responseBody
-        }
+
+    fun getRecentMovies(): List<Movie> {
+        return recentMovies()
     }
+
     suspend fun getUpcomingMovies(
     ) : GetMoviesResponse?{
         return withContext(Dispatchers.IO) {
@@ -43,14 +47,35 @@ object MovieRepository {
         }
     }
 
+    suspend fun searchRequest(query: String): GetMoviesResponse? {
+        return withContext(Dispatchers.IO) {
+            var response = ApiAdapter.retrofit.getSearchResults(BuildConfig.TMDB_API_KEY,query)
+            val responseBody = response.body()
+            return@withContext responseBody
+        }
+    }
 
-    fun getFavoriteMovies() : List<Movie> {
-        return favoriteMovies()
+    suspend fun getMovieDetails(id: Long): Movie? {
+        return withContext(Dispatchers.IO) {
+            var response = ApiAdapter.retrofit.getMovieDetails(id,BuildConfig.TMDB_API_KEY)
+            val responseBody = response.body()
+            return@withContext responseBody
+        }
     }
-    fun getRecentMovies() : List<Movie> {
-        return recentMovies()
+
+    suspend fun getSimilarMovies(id: Long): GetMoviesResponse? {
+        return withContext(Dispatchers.IO) {
+            var response = ApiAdapter.retrofit.getSimilarMovies(id,BuildConfig.TMDB_API_KEY)
+            val responseBody = response.body()
+            return@withContext responseBody
+        }
     }
-    fun getSimilarMovies(): Map<String, List<String>> {
-        return similarMovies()
+
+    suspend fun getMovieActors(id: Long): GetCreditsResponse? {
+        return withContext(Dispatchers.IO) {
+            var response = ApiAdapter.retrofit.getMovieActors(id,BuildConfig.TMDB_API_KEY)
+            val responseBody = response.body()
+            return@withContext responseBody
+        }
     }
 }

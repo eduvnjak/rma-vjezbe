@@ -18,51 +18,52 @@ import com.google.android.material.navigation.NavigationBarView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigation: BottomNavigationView
-    private val br: BroadcastReceiver = ConnectivityBroadcastReceiver()
-    private val filter = IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
-    //Listener za click
-    private val mOnItemSelectedListener = NavigationBarView.OnItemSelectedListener{ item ->
+
+    private val onNavigationItemSelectedListener = NavigationBarView.OnItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_favorites -> {
                 val favoritesFragment = FavoriteMoviesFragment.newInstance()
-                openFragment(favoritesFragment)
+                openFragment(favoritesFragment, "favorites")
                 return@OnItemSelectedListener true
             }
             R.id.navigation_recent -> {
                 val recentFragments = RecentMoviesFragment.newInstance()
-                openFragment(recentFragments)
+                openFragment(recentFragments,"recent")
                 return@OnItemSelectedListener true
             }
             R.id.navigation_search -> {
-                val searchFragment = SearchFragment.newInstance()
-                openFragment(searchFragment)
+                val searchFragment = SearchFragment.newInstance("")
+                openFragment(searchFragment,"search")
                 return@OnItemSelectedListener true
             }
         }
         false
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         with(window) {
             requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-            // postavit ćemo exitTranziciju
+
+            sharedElementExitTransition = Fade()
             exitTransition = Fade()
         }
 
         setContentView(R.layout.activity_main)
+
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         bottomNavigation = findViewById(R.id.navigationView)
-        bottomNavigation.setOnItemSelectedListener(mOnItemSelectedListener)
+        bottomNavigation.setOnItemSelectedListener(onNavigationItemSelectedListener)
 
-        //Defaultni fragment
-        bottomNavigation.selectedItemId= R.id.navigation_favorites
+
+        //Default fragment
+        bottomNavigation.selectedItemId = R.id.navigation_favorites
         val favoritesFragment = FavoriteMoviesFragment.newInstance()
-        openFragment(favoritesFragment)
-        if(intent?.action == Intent.ACTION_SEND && intent?.type == "text/plain")
-            handleSendText(intent)
+        openFragment(favoritesFragment,"favorites")
 
         Intent(this, LatestMovieService::class.java).also {
-        //Različito pokretanje u ovisnosti od verzije
+            //Različito pokretanje u ovisnosti od verzije
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(it)
                 return
@@ -70,27 +71,27 @@ class MainActivity : AppCompatActivity() {
             startService(it)
         }
 
+//        if(intent?.action == Intent.ACTION_SEND && intent?.type == "text/plain")
+//            handleSendText(intent)
     }
+
+//    private fun handleSendText(intent: Intent?) {
+//        intent?.getStringExtra(Intent.EXTRA_TEXT)?.let {
+//            bottomNavigation.selectedItemId = R.id.navigation_search
+//            val searchFragment = SearchFragment.newInstance(it)
+//            openFragment(searchFragment)
+//        }
+//    }
+
     //Funkcija za izmjenu fragmenta
-    private fun openFragment(fragment: Fragment) {
+    private fun openFragment(fragment: Fragment, tag: String) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-    override fun onResume() {
-        super.onResume()
-        registerReceiver(br, filter)
-    }
-    override fun onPause() {
-        unregisterReceiver(br)
-        super.onPause()
-    }
-    private fun handleSendText(intent: Intent) {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            bottomNavigation.selectedItemId= R.id.navigation_search
-            val searchFragment = SearchFragment.newInstance(it)
-            openFragment(searchFragment)
+        val naStacku = supportFragmentManager.findFragmentByTag(tag)
+        if (naStacku != null) {
+            transaction.replace(R.id.container, naStacku)
+            transaction.addToBackStack(tag)
         }
+        else transaction.replace(R.id.container, fragment)
+        transaction.commit()
     }
 }

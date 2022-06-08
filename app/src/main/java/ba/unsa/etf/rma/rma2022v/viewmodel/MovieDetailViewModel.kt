@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.rma2022v.viewmodel
 
+import android.content.Context
 import android.util.Log
 import ba.unsa.etf.rma.rma2022v.data.*
 import kotlinx.coroutines.CoroutineScope
@@ -9,62 +10,70 @@ import kotlinx.coroutines.launch
 
 
 class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?,
-                           private val moviesRetrieved: ((movies: List<String>) -> Unit)?,
                            private val actorsRetrieved: ((actors: List<String>) -> Unit)?) {
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
 
-    fun getMovieByTitle(name:String): Movie {
-        var movies: ArrayList<Movie> = arrayListOf()
-        movies.addAll(MovieRepository.getRecentMovies())
-        movies.addAll(MovieRepository.getFavoriteMovies())
-        val movie= movies.find { movie -> name.equals(movie.title) }
-        //ako film ne postoji vratimo testni
-        return movie?: Movie(0,"Test","Test","Test","Test","Test", null)
-    }
+
+//    fun getMovieByTitle(name: String): Movie {
+//        val movies:ArrayList<Movie> = arrayListOf()
+//        movies.addAll(MovieRepository.getFavoriteMovies())
+//        movies.addAll(MovieRepository.getRecentMovies())
+//
+//        val movie = movies.find{movie -> movie.title == name }
+//        return movie?:Movie(0,"Test","Test","Test","Test",null)
+//    }
+
     fun getMovieDetails(id: Long) {
-        val movies:ArrayList<Movie> = arrayListOf()
+        val movies: ArrayList<Movie> = arrayListOf()
         movies.addAll(MovieRepository.getFavoriteMovies())
         movies.addAll(MovieRepository.getRecentMovies())
 
-        val movie = movies.find{movie -> movie.id == id}
+        val movie = movies.find { movie -> movie.id == id }
         if (movie != null)
             movieRetrieved?.invoke(movie)
         else {
-            scope.launch{
+            scope.launch {
                 // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
                 val result = MovieRepository.getMovieDetails(id)
                 // Prikaže se rezultat korisniku na glavnoj niti
                 when (result) {
                     is Movie -> movieRetrieved?.invoke(result)
-                    else-> Log.i("error","error")
+                    else -> Log.v("meh", "meh")
                 }
             }
         }
     }
-    fun getSimilarMoviesById(id: Long){
+
+    fun getMovieActors(id: Long) {
+        scope.launch{
+            // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
+            val result = MovieRepository.getMovieActors(id)
+            // Prikaže se rezultat korisniku na glavnoj niti
+            when (result) {
+                is GetCreditsResponse-> actorsRetrieved?.invoke(result.actors.map { actor -> actor.name })
+                else -> println(id)
+            }
+        }
+    }
+
+    fun getSimilarMovies(id: Long) {
         scope.launch{
             // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
             val result = MovieRepository.getSimilarMovies(id)
             // Prikaže se rezultat korisniku na glavnoj niti
             when (result) {
-                is GetMoviesResponse -> moviesRetrieved?.invoke(result.movies.map { movie -> movie.title })
-                else-> Log.i("error","similarMovies")
+                is GetMoviesResponse -> actorsRetrieved?.invoke(result.movies.map { movie -> movie.title })
+                else -> Log.v("meh","meh")
             }
         }
     }
-    fun getActorsById(id: Long) {
-        scope.launch{
-            // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
-            val result = ActorMovieRepository.getMovieActors(id)
-            // Prikaže se rezultat korisniku na glavnoj niti
-            when (result) {
-                is GetCreditsResponse -> actorsRetrieved?.invoke(result.actors)
-                else-> Log.i("error","actors")
-            }
-        }
+
+    fun getActorsByTitle(movieTitle: String): List<String> {
+        return listOf("Leonardo DiCaprio","Keanu Reeves","Tom Cruise","Morgan Freeman","Natalie Portman","Hugo Weaving")
     }
+
     fun getMovieById(id: Long): Movie {
-        var movie = Movie(0,"test","test","test","test","test",null)
+        var movie = Movie(0,"test","test","test","test","test")
         scope.launch{
             // Vrši se poziv servisa i suspendira se rutina dok se `withContext` ne završi
             // Prikaže se rezultat korisniku na glavnoj niti
@@ -74,10 +83,15 @@ class MovieDetailViewModel(private val movieRetrieved: ((movie: Movie) -> Unit)?
         }
         return movie
     }
-    fun getActorsByTitle(actorName: String): List<String> {
-        return ActorMovieRepository.getActorMovies()?.get(actorName)?: emptyList()
-    }
-    fun getSimilarMoviesByTitle(movieName: String): List<String> {
-        return MovieRepository.getSimilarMovies()?.get(movieName)?: emptyList()
+
+    fun writeDB(context: Context, movie:Movie, onSuccess: (movies: String) -> Unit,
+                onError: () -> Unit){
+        scope.launch{
+            val result = MovieRepository.writeFavorite(context,movie)
+            when (result) {
+                is String -> onSuccess?.invoke(result)
+                else-> onError?.invoke()
+            }
+        }
     }
 }
