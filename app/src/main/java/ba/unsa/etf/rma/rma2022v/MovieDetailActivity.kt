@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,6 +15,7 @@ import ba.unsa.etf.rma.rma2022v.view.AdditionalInfoFragment
 import ba.unsa.etf.rma.rma2022v.viewmodel.MovieDetailViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MovieDetailActivity : AppCompatActivity() {
@@ -26,7 +28,7 @@ class MovieDetailActivity : AppCompatActivity() {
     private lateinit var poster : ImageView
     private lateinit var backDrop: ImageView
     private lateinit var navBar: BottomNavigationView
-    private lateinit var addTOFav: Button
+    private lateinit var addTOFav: FloatingActionButton
     private var movie: Movie? = null
     private val posterPath = "https://image.tmdb.org/t/p/w342"
     private val backdropPath = "https://image.tmdb.org/t/p/w500"
@@ -44,7 +46,7 @@ class MovieDetailActivity : AppCompatActivity() {
         poster = findViewById(R.id.movie_poster)
         backDrop = findViewById(R.id.movie_backdrop)
         navBar = findViewById(R.id.detail_navigation)
-        addTOFav = findViewById(R.id.addToFavBtn)
+        addTOFav = findViewById(R.id.shareButton)
 
         val extras = intent.extras
 

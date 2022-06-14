@@ -10,7 +10,7 @@ import ba.unsa.etf.rma.rma2022v.data.Movie
 import com.bumptech.glide.Glide
 
 class MovieDetailResultActivity : AppCompatActivity() {
-    private  var movie = Movie(0, "Test", "Test", "Test", "Test", "Test")
+    private  var movie = Movie(0, "Test", "Test", "Test", "Test", "Test", null)
     private lateinit var title : TextView
     private lateinit var overview : TextView
     private lateinit var releaseDate : TextView
