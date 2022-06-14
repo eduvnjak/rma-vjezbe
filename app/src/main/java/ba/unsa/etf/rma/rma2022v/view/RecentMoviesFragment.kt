@@ -19,7 +19,7 @@ import android.util.Pair as UtilPair
 class RecentMoviesFragment: Fragment() {
     private lateinit var recentMovies: RecyclerView
     private lateinit var recentMoviesAdapter: MovieListAdapter
-    private var movieListViewModel = MovieListViewModel(null,null)
+    private lateinit var movieListViewModel: MovieListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +46,7 @@ class RecentMoviesFragment: Fragment() {
         recentMovies.layoutManager = GridLayoutManager(activity, 2)
         recentMoviesAdapter = MovieListAdapter(arrayListOf()) { movie,view1,view2 -> showMovieDetails(movie,view1,view2) }
         recentMovies.adapter = recentMoviesAdapter
+        context?.let { movieListViewModel= MovieListViewModel(it) }
         return view
     }
 

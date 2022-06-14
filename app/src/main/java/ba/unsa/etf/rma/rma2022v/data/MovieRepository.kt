@@ -1,6 +1,7 @@
 package ba.unsa.etf.rma.rma2022v.data
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import ba.unsa.etf.rma.rma2022v.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,13 +15,12 @@ import java.net.URL
 object MovieRepository {
     private const val tmdb_api_key = BuildConfig.TMDB_API_KEY
 
-    suspend fun getFavoriteMovies(context: Context) : List<Movie> {
-        return withContext(Dispatchers.IO) {
-            var db = AppDatabase.getInstance(context)
-            var movies = db!!.movieDao().getAll()
-            return@withContext movies
-        }
+    fun getFavorites(context: Context) : LiveData<List<Movie>> {
+        var db = AppDatabase.getInstance(context)
+        var movies = db!!.movieDao().getAll()
+        return movies
     }
+
     suspend fun writeFavorite(context: Context,movie:Movie) : String?{
         return withContext(Dispatchers.IO) {
             try{

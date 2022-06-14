@@ -14,20 +14,22 @@ import ba.unsa.etf.rma.rma2022v.data.Movie
 import ba.unsa.etf.rma.rma2022v.viewmodel.MovieListViewModel
 import android.util.Pair as UtilPair
 import android.widget.Toast
+import androidx.lifecycle.Observer
 
 
 class FavoriteMoviesFragment: Fragment() {
     private lateinit var favoriteMovies: RecyclerView
     private lateinit var favoriteMoviesAdapter: MovieListAdapter
-    private var movieListViewModel = MovieListViewModel(null,null)
+    private lateinit var movieListViewModel : MovieListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context?.let {
-            movieListViewModel.getFavorites(
-                it,onSuccess = ::onSuccess,
-                onError = ::onError)
+        context?.let { movieListViewModel= MovieListViewModel(it) }
+        val moviesObserver = Observer<List<Movie>> { movies ->
+            favoriteMoviesAdapter.updateMovies(movies)
         }
+        context?.let { movieListViewModel= MovieListViewModel(it) }
+        movieListViewModel.favoriteMovies.observe(viewLifecycleOwner, moviesObserver)
     }
 
     fun onSuccess(movies:List<Movie>){
